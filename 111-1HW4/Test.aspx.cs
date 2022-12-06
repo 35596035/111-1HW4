@@ -14,7 +14,25 @@ namespace _111_1HW4
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            string s_Str = ConfigurationManager.ConnectionStrings["SQLLOCALDB"].ConnectionString;
+            if (!IsPostBack)
+            {
+                try
+                {
+                    SqlConnection o_Str = new SqlConnection(s_Str);
+                    o_Str.Open();
+                    SqlDataAdapter o_A = new SqlDataAdapter("Select * from Users", o_Str);
+                    DataSet o_D = new DataSet();
+                    o_A.Fill(o_D, "ds_Res");//SQL轉接器物件名稱.Fill(資料集物件名稱, 資料表名稱);
+                    gd_View.DataSource = o_D;
+                    gd_View.DataBind();
+                    o_Str.Close();
+                }
+                catch (Exception o_ex)
+                {
+                    Response.Write(o_ex.ToString());
+                }
+            }
         }
         protected void btn_Insert_Click(object sender, EventArgs e)
         {
@@ -26,14 +44,8 @@ namespace _111_1HW4
                 string str_sql = "Insert into Users (Name, Birthday)" + "values(N'阿貓阿狗', '2000/10/10');";
                 SqlCommand o_cmd = new SqlCommand(str_sql, o_Str);
                 o_cmd.ExecuteNonQuery();
-                //int i_Flag = o_cmd.ExecuteNonQuery();
-                //Response.Write(i_Flag);
-                SqlDataAdapter o_A = new SqlDataAdapter("Select * from Users", o_Str);
-                DataSet o_D = new DataSet();
-                //o_A.InsertCommand = o_cmd;
-                o_A.Fill(o_D, "ds_Res");//SQL轉接器物件名稱.Fill(資料集物件名稱, 資料表名稱);
-                gd_View.DataSource = o_D;
-                gd_View.DataBind();
+                Response.Redirect("https://localhost:44383/Test.aspx", false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
                 o_Str.Close();
             }
             catch (Exception o_ex)
